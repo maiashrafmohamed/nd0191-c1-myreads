@@ -1,18 +1,10 @@
-import { Component } from "react";
-import PropTypes from "prop-types";
+import { IBook } from "../../Models/book.model";
 import ShelfCharger from "./shelfCharger";
 
-class Book extends Component<any, any> {
-  static propTypes = {
-    book: PropTypes.object.isRequired,
-    // books: PropTypes.array.isRequired,
-    // changeShelf: PropTypes.func.isRequired
-  };
-
-  render() {
-    // this.getBooks()
-    const { book } = this.props;
-
+interface Props {
+    book: IBook;
+  }
+const Book: React.FC<Props> = ({book}) => {
     return (
       <div>
         <li>
@@ -26,15 +18,14 @@ class Book extends Component<any, any> {
                   backgroundImage: `url(${book.imageLinks?.thumbnail})`,
                 }}
               ></div>
-              <ShelfCharger></ShelfCharger>
+              <ShelfCharger book= {book}></ShelfCharger>
             </div>
             <div className="book-title">{book.title}</div>
-            <div className="book-authors">{book.author}</div>
+            <div className="book-authors">{book.authors[0]}</div>
           </div>
         </li>
       </div>
     );
   }
-}
 
 export default Book;

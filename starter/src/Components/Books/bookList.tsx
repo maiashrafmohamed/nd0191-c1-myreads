@@ -1,58 +1,48 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import BookShelf from "./bookShelf";
-import * as BooksAPI from "../../BooksAPI";
+import { useAppSelector } from "../../Redux/book.slice";
+import { useDispatch } from "react-redux";
+import { Dispatcher } from "../../Redux/book.store";
+import { getAllBooks } from "../../Redux/book.action";
+import { IBook } from "../../Models/book.model";
 
-class BookList extends Component<any, any> {
+const BookList: React.FC = () => {
+  const books = useAppSelector<IBook[]>((state) => state?.books?.books);
+  const dispatch = useDispatch<Dispatcher>();
 
-  state = { books: [] };
+  useEffect(() => {
+    dispatch(getAllBooks());
+  }, [dispatch]);
+  const shelfTypes = [
+    { type: "currentlyReading", title: "Currently Reading" },
+    { type: "wantToRead", title: "Want to Read" },
+    { type: "read", title: "Read" },
+  ];
 
-  componentDidMount() {
-    BooksAPI.getAll().then(books => this.setState({ books }));
-  }
+  return (
+    <div className="list-books">
+      <div className="list-books-title">
+        <h1>MyReads</h1>
+      </div>
 
-  render() {
-    // this.getBooks()
-    // const { books, bookshelf } = this.state
-
-    // const { books, changeShelf } = this.props;
-    const shelfTypes = [
-      { type: "currentlyReading", title: "Currently Reading" },
-      { type: "wantToRead", title: "Want to Read" },
-      { type: "read", title: "Read" },
-    ];
-
-    return (
-      <div className="list-books">
-        <div className="list-books-title">
-          <h1>MyReads</h1>
-        </div>
-
-        <div className="list-books-content">
-          <div>
-            {this.state.books.length > 0 && shelfTypes.map((shelf, index) => {
-              const shelfBooks = this.state.books.filter(
-                (book: any) => book.shelf === shelf.type
+      <div className="list-books-content">
+        <div>
+          {books.length > 0 &&
+            shelfTypes.map((shelf, index) => {
+              const shelfBooks = books.filter(
+                (book: IBook) => book.shelf === shelf.type
               );
-              return (
-                <div className="bookshelf" key={index}>
-                  <h2 className="bookshelf-title">{shelf.title}</h2>
-                  <div className="bookshelf-books">
-                    {/* <BookShelf books={shelfBooks} changeShelf={changeShelf} /> */}
-                    <BookShelf books={shelfBooks} />
-                  </div>
-                </div>
-              );
+              return <BookShelf books={shelfBooks} key={index} />;
             })}
-          </div>
-        </div>
-
-        <div className="open-search">
-          <Link to="/search">Search</Link>
         </div>
       </div>
-    );
-  }
-}
+
+      <div className="open-search">
+        <Link to="/search">Search</Link>
+      </div>
+    </div>
+  );
+};
 
 export default BookList;
